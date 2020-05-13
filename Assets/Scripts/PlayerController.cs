@@ -13,10 +13,13 @@ public class PlayerController : MonoBehaviour
     public float timeInvincible = 2.0f;
     bool isInvincible;
     float invincibleTimer;
+    Animator animator;
+    Vector2 lookDirection = new Vector2(1, 0);
 
     // Start is called before the first frame update
     void Start()
     {
+        animator = GetComponent<Animator>();
         currentHealth = maxHealth;
         rigidbody2d = GetComponent<Rigidbody2D>();
         // QualitySettings.vSyncCount = 0;
@@ -28,16 +31,31 @@ public class PlayerController : MonoBehaviour
     {
         float horizontalValue = Input.GetAxis("Horizontal");
         float verticalValue = Input.GetAxis("Vertical");
+
+        Vector2 move = new Vector2(horizontalValue, verticalValue);
+
+        // MATHF Approximately approximates the amount of 0.0f. pretty darn helpful!
+        if (!Mathf.Approximately(move.x, 0.0f) || !Mathf.Approximately(move.y, 0.0f))
+        {
+            lookDirection.Set(move.x, move.y);
+            lookDirection.Normalize();
+        }
+
+        animator.SetFloat("Look X", lookDirection.x);
+        animator.SetFloat("Look Y", lookDirection.y);
+        animator.SetFloat("Speed", move.magnitude);
+
         Vector2 position = rigidbody2d.position;
-        position.x = position.x + (speed * horizontalValue * Time.deltaTime);
-        position.y = position.y + (speed * verticalValue * Time.deltaTime);
+        position = position + move * speed * Time.deltaTime;
 
         // stops the jittering
         rigidbody2d.MovePosition(position);
 
-        if (isInvincible) {
+        if (isInvincible)
+        {
             invincibleTimer -= Time.deltaTime;
-            if (invincibleTimer < 0) {
+            if (invincibleTimer < 0)
+            {
                 isInvincible = false;
             }
         }
@@ -45,10 +63,12 @@ public class PlayerController : MonoBehaviour
 
     public void ChangeHealth(int amount)
     {
-        if (amount < 0) {
+        if (amount < 0)
+        {
             if (isInvincible) return;
-            isInvincible = true;  
-            invincibleTimer = timeInvincible;      
+            isInvincible = true;
+            invincibleTimer = timeInvincible;
+            animator.SetTrigger("Hit");
         }
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
         Debug.Log(currentHealth + " / " + maxHealth);
