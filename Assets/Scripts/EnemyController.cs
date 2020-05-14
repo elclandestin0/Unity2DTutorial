@@ -10,6 +10,7 @@ public class EnemyController : MonoBehaviour
     public bool vertical;
     bool broken;
     float direction = 1.0f;
+    public ParticleSystem particleSystem;
 
     float switchMovementTime = 1.0f;
     // Start is called before the first frame update
@@ -62,5 +63,6 @@ public class EnemyController : MonoBehaviour
         // removes the rigidbody2d from the physics system
         rigidbody2d.simulated = false;
         animator.SetTrigger("Fixed");
+        particleSystem.Stop();
     }
 }
