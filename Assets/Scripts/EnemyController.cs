@@ -11,6 +11,7 @@ public class EnemyController : MonoBehaviour
     bool broken;
     float direction = 1.0f;
     public ParticleSystem particleSystem;
+    public AudioClip hit;
 
     float switchMovementTime = 1.0f;
     // Start is called before the first frame update
@@ -54,6 +55,7 @@ public class EnemyController : MonoBehaviour
         if (player != null)
         {
             player.ChangeHealth(-1);
+            player.PlaySound(hit);
         }
     }
 

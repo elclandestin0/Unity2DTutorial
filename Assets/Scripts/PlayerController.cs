@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public AudioClip collectible;
+    public AudioClip hit;
+    public AudioClip cog;
+    AudioSource source;
     Rigidbody2D rigidbody2d;
     public int maxHealth;
     public GameObject projectilePrefab;
@@ -21,6 +25,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        source = GetComponent<AudioSource>();
         animator = GetComponent<Animator>();
         currentHealth = maxHealth;
         rigidbody2d = GetComponent<Rigidbody2D>();
@@ -71,10 +76,13 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.X))
         {
             RaycastHit2D hit = Physics2D.Raycast(rigidbody2d.position + Vector2.up * 0.2f, lookDirection, 1.5f, LayerMask.GetMask("NPC"));
-            NPC npc = hit.collider.GetComponent<NPC>();
-            if (npc != null)
+            NPC npc = hit.collider.GetComponent<NPC>() ? hit.collider.GetComponent<NPC>() : null; if (npc != null)
             {
                 npc.DisplayDialog();
+            }
+            else
+            {
+                return;
             }
         }
     }
@@ -87,6 +95,7 @@ public class PlayerController : MonoBehaviour
             isInvincible = true;
             invincibleTimer = timeInvincible;
             animator.SetTrigger("Hit");
+            PlaySound(hit);
         }
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
         Debug.Log(currentHealth + " / " + maxHealth);
@@ -101,5 +110,11 @@ public class PlayerController : MonoBehaviour
         projectile.Launch(lookDirection, projectileForce);
 
         animator.SetTrigger("Launch");
+        PlaySound(cog);
+    }
+
+    public void PlaySound(AudioClip clip)
+    {
+        source.PlayOneShot(clip);
     }
 }
