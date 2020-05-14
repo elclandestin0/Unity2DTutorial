@@ -8,6 +8,7 @@ public class EnemyController : MonoBehaviour
     Rigidbody2D rigidbody2d;
     public float speed;
     public bool vertical;
+    bool broken;
     float direction = 1.0f;
 
     float switchMovementTime = 1.0f;
@@ -41,6 +42,8 @@ public class EnemyController : MonoBehaviour
             direction = -direction;
             switchMovementTime = 1.0f;
         }
+
+        if (!broken) return;
     }
 
     void OnCollisionEnter2D(Collision2D other)
@@ -53,4 +56,11 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    public void Fix()
+    {
+        broken = false;
+        // removes the rigidbody2d from the physics system
+        rigidbody2d.simulated = false;
+        animator.SetTrigger("Fixed");
+    }
 }
